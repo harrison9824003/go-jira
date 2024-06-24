@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func getJiraContent(issueId string) (*jira.Issue, error) {
+func GetJiraContent(issueId string) (*jira.Issue, error) {
 	tp := jira.BasicAuthTransport{
 		Username: viper.GetString("jira.username"),
 		Password: viper.GetString("jira.token"),
