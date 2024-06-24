@@ -1,7 +1,9 @@
 package jiraclient
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/andygrunwald/go-jira"
 	"github.com/spf13/viper"
@@ -37,4 +39,24 @@ func GetJiraContent(issueId string) (*jira.Issue, error) {
 
 	// 回傳 issue
 	return issue, nil
+}
+
+func GetJiraIssueFromContentLink(content string) ([]string, error) {
+	jiraDomain := viper.GetString("jira.domain")
+	regexPattern := `https:\/\/` + jiraDomain + `\/browse\/([A-Z]+-\d+)`
+	re := regexp.MustCompile(regexPattern)
+
+	matches := re.FindAllStringSubmatch(content, -1)
+	if matches == nil {
+		return nil, errors.New("no JIRA issue IDs found in content")
+	}
+
+	var issueIDs []string
+	for _, match := range matches {
+		if len(match) > 1 {
+			issueIDs = append(issueIDs, match[1])
+		}
+	}
+
+	return issueIDs, nil
 }
